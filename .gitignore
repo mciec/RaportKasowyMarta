@@ -1,0 +1,13 @@
+# Data files must never be committed
+*.pdf
+*.PDF
+*.xls
+*.XLS
+*.xlsx
+*.XLSX
+*.txt
+*.TXT
+
+# Local / generated
+__pycache__/
+.claude/settings.local.json
