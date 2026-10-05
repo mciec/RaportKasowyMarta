@@ -14,3 +14,6 @@ __pycache__/
 
 # Spec of the output format is safe to track
 !pattern.txt
+
+# Legacy files
+old/
