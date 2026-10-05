@@ -5,12 +5,12 @@ description: Transform a monthly "Raport kasowy" (cash report) XLS or PDF file i
 
 # Transform Raport kasowy to Symfonia format
 
-The converter is `c:\src\marta\rk_to_fk.py`. It reads an `.xls` or `.pdf` cash report and writes the Symfonia FK import file (`Dokument{ ... Zapis{ ... } }`, values unquoted, pure ASCII, UTF-8).
+The converter is `rk_to_fk.py` in the project root (the folder containing `.claude`). It reads an `.xls` or `.pdf` cash report and writes the Symfonia FK import file (`Dokument{ ... Zapis{ ... } }`, values unquoted, pure ASCII, UTF-8).
 
 ## Steps
 
-1. Resolve the input file in `c:\src\marta` (the user usually gives just a name such as `rk10.XLS`; extension case doesn't matter). If it doesn't exist, list candidates with Glob rather than guessing.
-2. Run (from `c:\src\marta`):
+1. Resolve the input file in the project root (the user usually gives just a name such as `rk10.XLS`; extension case doesn't matter). If it doesn't exist, list candidates with Glob rather than guessing.
+2. Run (from the project root):
    ```
    python rk_to_fk.py "<input file>" [output.txt]
    ```
