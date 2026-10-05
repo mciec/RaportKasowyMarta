@@ -1,0 +1,688 @@
+#opis  "Dane z programu Handel, format FK 3.0", "*.TXT (Pliki tekstowe)"  //
+#format  "AMS"  //
+#opisy  ""  //
+#Disable  "2"  //poziom ostrze¿eñ 1 (m.in. bez ostrze¿enia "Pole nie znalezione")
+#POWIELONE_NAZWY  "1"  //0-zapisuje bez pytania; 1-pyta czy zapisaæ; 2-nie zapisuje
+#DANEKH  "1"
+
+Section("INFO", "INFO")
+{
+	REX( SUM0([Wersja_programu], -86) , "{^/-}" )
+	IF ( @rex1 )
+	{
+		$ustawuewntwdt = 1	
+	}	
+	ELSE
+	{
+		$ustawuewntwdt = 0
+	}
+}
+
+Section( "Kontrahent", "Kontrahent")
+{
+    $klucz      = SUM0([id],-65535)
+    IF ( equal($klucz, "") )
+    {
+        $klucz = [kod]
+    }
+	$skrot		= [kod]
+	$nazwa		= [nazwa]
+	$miejscowosc	= [miejscowosc]
+	$rejon		= [rejon]
+
+	IF ( REX( [nip], "{[rRpP]}/:{*$}" ) )
+	{
+		IF ( EQUAL( TRANSLATE(@rex1, "U"), "P"))
+			$pesel = @rex2
+		ELSE
+			$regon = @rex2
+	}
+	ELSE
+	{
+		$nip = [nip]
+	}
+
+	IF( EXIST( "dom") )
+	{
+		$ulica		= [ulica]
+		$NumerDomu	= [dom]
+		$NumerMieszk= [lokal]
+	}
+	ELSE
+	{
+		IF( REX([ulica], "-{*}({[0-9///-]##:b()|[A-Q]})(:b[//\\.,]|(m[,.]+)|():b{[0-9]##:b[A-Z]|()})|()$"))
+		{
+			$ulica		= @rex1
+			$NumerDomu	= @rex2
+			$NumerMieszk= @rex3
+		}
+		ELSE
+			$ulica		= [ulica]
+	}
+
+	$kod       	= [kodpocz]
+	$telefon1  	= [tel1]
+	$telefon2   	= [tel2]
+	$telefax	= [fax]
+	IF( equal([badres], "") )
+		$w_banku1 	= [bnazwa]
+	ELSE
+		$w_banku1 	= CAT([bnazwa], ", ", [badres])
+	$rachunek1 	= [bkonto]
+	$nazwisko   	= [nazwisko]
+	$imie     	= [imie]
+	$fk_ident	= [khfk]
+
+	$regon		= [regon]
+	$pesel		= [pesel]
+
+	$idKraj		= [idKraj]	
+	$krajKod = [krajKod]
+
+	$statusUE	= [statusUE]
+
+	$limit		= [limit]
+	$limitKwota	= [limitKwota]
+	$limitWaluta	= [limitWaluta]
+	$znacznik	= [znacznik]
+
+	$www		= [www]
+	$email		= [email]
+
+	$aktywny	= [aktywny]
+	$osfiz		= [osfiz]
+	$eGUID		= [guid]
+
+	// w przypadku wartoœci nadanej explicite nie ustawimy defaultu wynikaj¹cego z kraju i NIP
+	if ( !equal( [PodatnikVAT], "" ) )
+	{
+		$PodatnikVAT_Nadany = 1
+		$PodatnikVAT = [PodatnikVAT]
+	}
+	else
+	{
+		$PodatnikVAT_Nadany = 0
+	}
+	$MPP = [MPP]
+	$jednostkaPowiazana = [jednostkaPowiazana]
+}
+
+Section( "Pracownik", "Pracownik")
+{
+	$klucz			= SUM0([id],-65535)
+	$nazwisko		= [nazwisko]
+	$imie1			= [imie]
+	$imie2			= [naglowek]	//imie2
+	$fk_ident	= [khfk]
+	$telefon		= [tel1]
+	$st_miejscowosc	= [miejscowosc]
+
+	IF ( REX( [nip], "{[rRpP]}/:{*$}" ) )
+	{
+		IF ( EQUAL( TRANSLATE(@rex1, "U"), "P"))
+			$pesel = @rex2
+		ELSE
+			$regon = @rex2
+	}
+	ELSE
+	{
+		$nip = [nip]
+	}
+	$pesel		= [pesel]
+
+//	$st_ulica		= [ulica]
+	IF( EXIST( "dom") )
+	{
+		$st_ulica		= [ulica]
+		$st_NumerDomu	= [dom]
+		$st_NumerMieszk= [lokal]
+	}
+	ELSE
+	{
+		IF( REX([ulica], "-{*}({[0-9///-]##:b()|[A-Q]})(:b[//\\.,]|(m[,.]+)|():b{[0-9]##:b[A-Z]|()})|()$"))
+		{
+			$st_ulica		= @rex1
+			$st_NumerDomu	= @rex2
+			$st_NumerMieszk= @rex3
+		}
+		ELSE
+			$st_ulica		= [ulica]
+	}
+
+	$st_kod			= [kodpocz]
+	$st_poczta		= [miejscowosc]
+	$rch_symbol		= [bnazwa]
+	$rch_numer		= [bkonto]
+
+	$aktywny	= [aktywny]
+	$skrot		= [kod]
+}
+
+Section( "Urz¹d", "Urzad")
+{
+	$skrot		= [kod]
+	$klucz			= SUM0([id],-65535)
+	$nazwa			= [nazwa]
+
+	IF( EXIST( "dom") )
+	{
+		$ulica		= [ulica]
+		$NumerDomu	= CAT([dom], " / ", [lokal])
+//		$NumerMieszk= [lokal]
+	}
+	ELSE
+	{
+		IF( REX([ulica], "-{*}({[0-9///-]##:b()|[A-Q]})(:b[//\\.,]|(m[,.]+)|():b{[0-9]##:b[A-Z]|()})|()$"))
+		{
+			$ulica		= @rex1
+			$NumerDomu	= CAT(@rex2, " / ", @rex3)
+	//		$NumerMieszk= @rex3
+		}
+		ELSE
+			$ulica		= [ulica]
+	}
+
+	$kod  			= [kodpocz]
+	$miejsce		= [miejscowosc]
+	$symbol			= [bnazwa]
+	$rachunek		= [bkonto]
+
+	$aktywny	= [aktywny]
+	$kodUS			= [kodUrzeduSkarbowego]
+}
+
+Section("dokument", "")
+{
+	if( NOT(equal( SUM0([anulowany],[anulowanyFaktura]), "1")) )
+	{
+		MakeSec("dokument")
+		{
+			@opisy = ""
+			Info("Dokument: ", [FK nazwa])
+			$ObslugujJak 	= [obsluguj jak]
+			$klucz		= [symbol FK]
+			$nazwa		= [FK nazwa]
+			$rodzaj_dok		= [rodzaj_dok]
+			$ObslugujJak	= [rodzaj_dok]
+			$klucz		= [rodzaj_dok]
+			$naliczenie_VAT	= [naliczenie_VAT]
+			$eGUID = [guid]
+			$uid = [guid]
+			$eStatus = [e_status]
+
+			switch( [obsluguj jak] )
+			{
+			case "RK"
+    				Info("konto kasy: ", [KontoKasy])
+				if( equal([KontoKasy], "") )
+				{
+					Ask("Dokument nie posiada zdefiniowanego konta kasy. ",
+						"Poniewa¿ nie mo¿na okreœliæ strony dla konta kasy, ",
+						"pole kwoty pozostanie puste. DefBtn:&OK=2 Ico:!")
+				}
+			case "DP"
+			case "WB"
+			case "DIM"
+			case "DEX"
+					@opisy	= 1
+				$tresc	= [opis FK]
+				break
+			case else
+					if (!Def("opisy"))
+    				{
+					Def("opisy", Ask("Czy importowaæ opisy faktur VAT i rachunków? DefBtn:&Tak=10 Btn:&Nie=C Ico:?") )
+	    			}
+    				if( Equal( Def("opisy"), "10") )
+					{
+        				@opisy = 1
+					$tresc	= [opis FK]
+				}
+			}
+
+			if ( Equal([rodzaj_dok], "zakupu") )
+			{
+				switch( [obsluguj jak] )
+				{
+				case "WNT"
+                    $DataDok	= Date([dataWystawieniaObca])                       
+                    $DataOper	= Date([dataZakupu])
+					break
+				case "DIM" 
+					if ( Exist("data_obcy") )
+					{
+						$DataDok	= Date([data_obcy])
+						$DataOper	= Date([data_obcy])
+					}
+					else
+					{
+						$DataDok	= Date([data])
+						$DataOper	= Date([data])
+					}
+					break
+				case else
+					if ( Exist("data_obcy") )
+						$DataDok	= Date([data_obcy])
+					else
+						$DataDok	= Date([datasp])
+						
+					$DataOper	= Date([datasp])
+				}
+			}
+			else
+			{
+				if ( Equal([rodzaj_dok], "magazynowy") )
+				{
+					$DataDok	= Date([datasp])
+					$DataOper	= Date([data])
+				}
+				else
+				{
+					$DataDok	= Date([data])
+					$DataOper	= Date([data])     
+					$DataOper	= Date([datasp])   //#89308
+				}
+			}
+
+			$Kwota		= [kwota]
+
+			$Sygnatura	= [Sygnatura]
+
+			$SaldoPoczRK	= [SaldoPRK]
+		//	$SaldoZapRK	= sum0([SaldoZRK],[SaldoPRK])
+			$SaldoZapRK	= [SaldoZRK]
+			$KontoKasy	= [KontoKasy]
+
+			$NazwaKor	= [NazwaKor]
+			$DataKor	= Date([DataKor])
+            $DataOdprawy = Date([DataOdprawy])
+			$mppFlags	= [mppFlags]
+			$rachunek	= [rachunek]
+			$atrJpkV7   = [JPK_V7]
+
+			if ( !equal([rodzaj_dok], "sprzeda¿y") )
+			{
+				$Datawpl = Date([Datawpl])
+			}
+
+			IF(NOT (equal([plattermin], "")) )
+			{
+				@plattermin	= Date([plattermin])
+			}
+
+			switch( [obsluguj jak] )
+			{
+			case "DIM"
+				break
+			case else
+				IF ( NOT(equal([waluta], "")) )
+				{
+					if ( !equal([wkwota], "") )
+					{
+						$wkwota = [wkwota]
+						$waluta = [waluta]
+						$kurs =	[kurs]
+						$typkursu = 3
+					}
+				}
+			}
+			if ( equal( $ObslugujJak, "DIM") )
+            {
+                IF ( equal([DataOdprawy], "") )
+                {
+                    $DataOdprawy = Date([Datawpl])
+                }
+            }
+			else
+			{
+				if ( equal( $ObslugujJak, "DEX") )
+				{
+					IF ( equal([DataOdprawy], "") )
+					{
+						$DataOdprawy = Date([dataSprzedazy])
+					}
+				}
+			}
+
+			//analizujemy wszystkie sekcje - mog¹ byæ wymieszane
+			Section("", "", "REPEAT")	//REPEAT: analizujemy wszystkie podsekcje
+			{
+				switch( Translate( Name(), "L") )
+				{
+				case "atrybutwaluta"
+					MakeSec("AtrybutWaluta")
+					{
+						$data=[data]
+						$kurs=[kurs]
+						$waluta=[waluta]
+						$opis=[opis]
+						$dane=[dane]
+					}
+					break
+				case "dane nabywcy"
+				case "dane sprzedawcy"
+					if (!equal([khid], 0))
+					{
+						@kthsec = "Kontrahent"
+						@kthkey	= SUM0([khid],-65535)
+					}
+					else
+					{
+						if( !equal( [khnip], "") )
+						{
+							@kthsec = "Incydentalny"
+							@kthkey	= [khnip]
+						}
+						else
+						if( !equal( [khnazwa], "") )
+						{
+							@kthsec = "Incydentalny"
+							@kthkey = [khnazwa]
+						}
+					}
+
+					IF(NOT (equal(@@kthsec, "")) )
+					{
+						MakeSec(@@kthsec)
+						{
+							IF ( REX( [khnip], "{[rRpP]}/:{*$}" ) )
+							{
+								// w polu NIP przekazywany PESEL albo REGON
+							}
+							ELSE
+							{
+								$NIP	  = [khnip]
+							}
+
+							$klucz		= @@kthkey
+							IF ( equal($klucz, "") )
+							{
+								$klucz = [khnip]
+							}
+							IF ( equal($klucz, "") )
+							{
+								$klucz = [khnazwa]
+							}
+							$nazwa		= [khnazwa]
+							$miejscowosc= [khmiasto]
+							$ulica		= [khadres]
+							$NumerDomu	= [khdom]
+							$NumerMieszk= [khlokal]
+							$kod       	= [khkodpocz]
+							$kraj       = [khKrajKod]
+
+							if (!Equal([fk_ident], "0"))
+								$fk_ident = [fk_ident]   //uzgodniony numer FK
+						}	
+					}
+					break
+				case "zapis"
+					MakeSec("zapis")
+					{
+						$strona		= Rex([strona], "MA", 1) //WN=0 (""), MA=1
+						$kwota		= [kwota]
+						$Konto		= [Konto]
+						$NumerDok	= [NumerDok]
+						$IdDlaRozliczen = [IdDlaRozliczen]
+						if ( Equal(@@opisy, 1) )
+						{
+							$Opis		= [opis]
+							$typopisu	= 1   //opis bezpoœrednio
+						}
+						$ZapisRownolegly	= [ZapisRownolegly]
+						$pozycja 		= [Pozycja]
+
+						IF ( NOT(equal([waluta], "")) )
+						{
+							$wkwota = [wkwota]
+							$waluta = [waluta]
+							$kurs =	[kurs]
+							$typkursu = 3
+						}
+						$dataKPKW        = Date([dataKPKW])
+					}
+					break
+				case "rejestr"
+					IF( Equal(Equal($$obslugujJak, "FWN"), Equal($$obslugujJak, "DP")) )
+					{
+						MakeSec("rejestr")
+						{
+							IF( EXIST( "skrot") )
+								$Klucz		= CAT([skrot], ",", "ZW", ",", [stawka])
+							ELSE
+								$Klucz		= CAT($$klucz, ",", "ZW", ",", [stawka])
+							@nazwa		= [Nazwa]
+
+							switch ( [ABC] )
+								{
+								case "2"
+									$ABC		= 2	//B
+									break
+								case "4"
+									$ABC		= 4	//C
+									break
+								case "8"
+									$ABC		= 8	//D
+									break
+								case else
+									$ABC		= 1	//A
+									break
+								}
+
+							switch( Translate( $$rodzaj_dok, "L") )
+								{
+								case "sprzeda¿y"
+									switch( [metoda_vat] )
+									{
+									case "0"
+										$oczek = 0
+										break
+									case "1"
+										switch( $$ObslugujJak )
+										{
+										case "FKS"
+										case "RKS"
+											$oczek = 0
+											break
+										case else
+											$oczek = 2
+											break
+										}
+										break
+									case "2"
+										$oczek = 0
+										break
+									}
+									break
+								case "zakupu"
+									switch( $$naliczenie_VAT )
+									{
+									case "0"
+										$oczek = 0
+										break
+									case "1"
+										$oczek = 1
+										break
+									case "3"
+										$oczek = 2
+										break
+									case "4"
+										$oczek = 2
+										break
+									case "5"
+										$oczek = 2
+									}
+									break					
+								}
+							$okres		= [okres]
+							$netto		= [netto]
+							$vat		= [vat]
+							$brutto		= [brutto]
+							$stawka		= [stawka]
+							$usluga		= [usluga]
+							$ue		= [ue]
+							$rozbicie	= [rozbicie]
+							$dekretacja	= [dekretacja]
+							$atrJpkV7   = [JPK_V7]
+                            if ( equal( [rodzajDostawy], "" ) )
+                            {
+							    if ( !equal( [KrajKod], "" ) )
+								    $krajDostawy = [KrajKod]
+							    else
+								    $krajDostawy = [krajDostawy]
+                            }
+                            else
+                            {
+								$krajDostawy = [krajDostawy]
+                            }
+							$krajWysylki = [krajWysylki]
+							$rodzajDostawy = [rodzajDostawy]
+							$korektaOSS = [korektaOSS]
+							// Z "http://drotfs/Sites/FORTE/Development/Wielowalutowoœæ/Notatka%20ze%20spotkañ%20w%202010_03%20o%20przyjmowaniu%20dokumentów%20z%20importu%20i%20ITG.docx":
+							// "Handel przesy³a Netto, VAT i Brutto w walucie".
+							// Zatem z uwagi na Handel (jako jednego z nadawców)
+							$nettoWaluta = [nettoWaluta]
+							$vatWaluta = [vatWaluta]
+							$bruttoWaluta = [bruttoWaluta]
+
+							$typ		= "ZW"
+	// ponizsze poznum od v5.20 mozna wyrzucic - robi to import
+							switch ( $$obslugujJak )
+							{
+								case "FVS"
+								case "FVZ"
+								case "RUS"
+								case "RUZ"
+									$poznum = -1
+								break
+							}
+							
+							Section("", "", "REPEAT")	//REPEAT: analizujemy wszystkie podsekcje
+							{
+								switch( Translate( Name(), "L") )
+								{
+									case "pozycja vat"
+										MakeSec( "pozycja vat" )
+										{
+											$stawka=[stawka]
+											$stawka_pl=[stawka_pl]
+											$opis=[opis]
+											$wartosc=[wartosc]
+											$usluga=[usluga]
+											$ue=[ue]
+										}
+								}
+							}
+						}
+					}
+					break
+				case "transakcja"
+					MakeSec("transakcja")
+					{
+						$ustawowe		= 1 	//odsetki ustawowe
+						$zaliczka		= 0		//Zaliczka
+						$idDlaRozliczen = [idDlaRozliczen]
+						$termin			= [termin]
+						$rachunek		= [rachunek]
+					}
+					break
+				case "zlecenie przelewu"
+					MakeSec("ePrzelewy")
+					{
+						$idDlaRozliczen 	= [idDlaRozliczen]
+						$guid			= [guid]
+						$rodzaj			= 1
+					}
+					break
+				case "operacja bankowa"
+					MakeSec("operacjaBankowa")
+					{
+						$idDlaRozliczen 	= [idDlaRozliczen]
+						$guid			= [guid]
+						$rodzaj			= 2
+					}
+					break
+				case "rozliczenie"
+					MakeSec("rozliczenie")
+					{
+						$dSymbol = [dSymbol]	//numer w³asny dokumentu
+						$idDlaRozliczen = [idDlaRozliczen]
+						if( !equal([kwota], "") )
+						{
+							$kwota = [kwota]
+						}
+						if( !equal([wkwota], "") )
+						{
+							$wkwota = [wkwota]
+						}
+						$kursWO = [kursWO]
+						$walutaObca = [walutaObca]
+						$rozliczonoWO = [rozliczonoWO]
+						$ustawowe		= 1 	//odsetki ustawowe
+						$zaliczka		= 0		//Zaliczka
+						IF(NOT (equal(@@plattermin, "")) )
+						{
+							$termin		= @@plattermin	//Termin;
+						}
+						ELSE
+						{
+						    $termin	= [termin]
+							$znacznik = [znacznik]
+						}
+						$oBGuid			= [OBguid]
+						$ePGuid			= [EPguid]
+						$rachunek       = [rachunek]
+					}
+					break
+				}
+			}
+
+		}
+	}
+
+}
+
+
+Section("INFO", "")
+{
+	if ( !equal([Wersja szablonu], "3.1") )
+	{
+		if (  equal(ASK("Wskazany plik danych wymaga innej wersji szablonu importowego. Czy przerwaæ import danych? DefBtn:&Tak=10 Btn:&Nie=C ico:?"), "10") )
+			ERROR("Operacja importu zosta³a przerwana.")
+	}
+}
+
+
+Section("Towar", "")
+{
+}
+
+Section("Magazyn", "")
+{
+}
+
+Section("Z oddzia³u. Dok. magazynowy", "")
+{
+}
+
+Section("Z oddzia³u. Dok. pieniê¿ny", "")
+{
+}
+
+Section("Waluta", "")
+{
+}
+
+Section("StawkaVAT", "")
+{
+}
+
+Section("TypyCen", "")
+{
+}
+
+Section("","")
+{
+	Warning("Nierozpoznana sekcja: ", Name())
+}
+
+

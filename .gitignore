@@ -11,3 +11,6 @@
 # Local / generated
 __pycache__/
 .claude/settings.local.json
+
+# Spec of the output format is safe to track
+!pattern.txt

@@ -1,0 +1,37 @@
+Dokument{
+	symbol FK	  		=${concatenate the constant "HURTOWNIA PAPIEROSÓW TOMASZ MICHALSKI", a white space, and the value of "FK nazwa". For a PDF input, use instead the first line of page 1 (company name) instead of the constant}
+	obsluguj jak  		=RK
+	FK nazwa	  		=${take a cell in second row, 1 row below a merged cell with a text "Raport kasowy". This cell can also be merged. Store it a string}
+	dataWystawienia		=${take a cell in third row, 2 rows below a merged cell with a text "Raport kasowy". This cell can also be merged. It starts with a text "za okres", followed by a dates interval using the dates in a format: dd.MM.yyyy. Take an ending date and store it using format: yyyy-MM-dd }
+	opis FK		  		=Raport kasowy
+	KontoKasy			=100
+	SaldoPRK	  		=${after the last row of a table, there's a summary row for columns "Wpłata" and "Wypłata". Then, one row below, in column T, there is a value of "Stan początkowy :". Store it as a decimal}
+	SaldoZRK			=${one row below the value for SaldoPRK, in the same column, there is a value for "Stan końcowy :". Store it as a decimal}
+
+	// PDF input: columns map as Lp.->Lp., Data->Data, Wpłata->Wn, Wypłata->Ma, Nr. KP/KW->Nr dokumentu, Tytułem->Opis, Klient->Kontrahent.
+	// Multi-line cells are joined with a white space; Lp. wrapped over two lines (e.g. "16" + "1") is joined to 161. Pages' banners, repeated headers and footers are skipped.
+	// PDF Data is already yyyy-MM-dd. FK nazwa = text after "Nr raportu kasowego"; dataWystawienia = ending date of "za okres od ... do ...";
+	// SaldoPRK = value of "Z poprzedniego raportu"; SaldoZRK = value of "Stan kasy" (both at the bottom of the last page).
+	// If the client (Klient/Kontrahent) is empty, Opis is just the title, without the trailing comma.
+	// All output text is plain ASCII (Polish diacritics transliterated), UTF-8 file.
+	Zapis{
+		Pozycja				=${take an integer from column Lp.}
+		kwota 		 		=${if a decimal in column "Wpłata" is not empty then take it, otherwise take a decimal from column "Wypłata"}
+		strona 		  		=WN
+		Konto				=${if a decimal in column "Wpłata" is not empty then store string "100", otherwise store "202-3-1-k"}
+		NumerDok			=${take a string from column "Nr. KP/KW". It can be merged}
+		Opis				=${take a string from column Tytułem". It can be merged. Then concatenate it with a comma, a white space, and then with a column "Klient" }
+		dataKPKW			=${take a date from a column "Data". It's in a format: dd-MM-yyyy. Store it in a format: yyyy-MM-dd}
+	}
+	Zapis{
+		Pozycja				=${take an integer from column Lp.}
+		kwota 		 		=${if a decimal in column "Wpłata" is not empty then take it, otherwise take a decimal from column "Wypłata"}
+		strona 		  		=MA
+		Konto				=${if a decimal in column "Wypłata" is not empty then store string "100", otherwise store "201-3-1-k"}
+		NumerDok			=${take a string from column "Nr. KP/KW". It can be merged}
+		Opis				=${take a string from column Tytułem". It can be merged. Then concatenate it with a comma, a white space, and then with a column "Klient" }
+		dataKPKW			=${take a date from a column "Data". It's in a format: dd-MM-yyyy. Store it in a format: yyyy-MM-dd}
+	}
+
+
+}
